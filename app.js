@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 
 const newsRouter = require('./routes/newsRouter')();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 2999;
 
 const app = express();
 

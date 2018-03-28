@@ -1,9 +1,9 @@
-var assert = require('assert');
+const expect = require('chai').expect;
 
 describe('A feature', () => {
     describe('A scenario', () => {
         it('does something', () => {
-            assert(true);
+            expect(true).to.equal(true);
         });
     });
 });
