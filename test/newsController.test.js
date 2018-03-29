@@ -35,9 +35,9 @@ describe('newsController', () => {
             });
 
             it('should send back the resulting JSON from the 3rd party api', () => {
-                let mock3rdPartResponse = {};
+                let mock3rdPartResponse = { news: 'news' };
                 let mockReq = {};
-                let mockRes = { json: sinon.spy() }
+                let mockRes = { json: sinon.spy() };
 
                 // stub fetchUrl to resolve with fake JSON
                 mockFetchUrl.resolves(mock3rdPartResponse);
@@ -49,13 +49,29 @@ describe('newsController', () => {
             it('if the 3rd party request rejects with an error, it should send back that error', () => {
                 let mock3rdPartError = 'Error';
                 let mockReq = {};
-                let mockRes = { send: sinon.spy() }
+                let mockRes = { send: sinon.spy() };
 
                 // stub fetchUrl to reject with fake error message
                 mockFetchUrl.rejects(mock3rdPartError);
                 newsController.get(mockReq, mockRes);
 
                 expect(mockRes.send).calledWith(mock3rdPartError);
+            });
+        });
+
+        describe('when news data has been previously cached', () => {
+            it('should respond with the cached data', () => {
+                // stub the cache to return fake data
+                let mockCachedData = JSON.stringify({ news: 'news' });
+                mockCache.get = sinon.stub().callsArgWith(1, null, mockCachedData);
+
+                let mockReq = {};
+                let mockRes = { json: sinon.spy() };
+                
+                newsController.get(mockReq, mockRes);
+                
+                let expectedResponse = JSON.parse(mockCachedData);
+                expect(mockRes.json).calledWith(expectedResponse);
             });
         });
     });
