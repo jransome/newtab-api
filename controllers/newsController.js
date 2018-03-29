@@ -1,7 +1,7 @@
-const newsController = (options) => {
+const newsController = (options = {}) => {
     const cacheTimeout = options.cacheTimeout || 120;
-    const fetchUrl = options.fetchUrl //|| require('../modules/fetchUrl');
-    const cache = options.cache //|| require('../cache');
+    const fetchUrl = options.fetchUrl || require('../modules/fetchUrl');
+    const cache = options.cache || require('../cache');
     const key = require('../keys').newsApi;
 
     let sources = "?sources=" +
