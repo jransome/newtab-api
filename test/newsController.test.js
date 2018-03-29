@@ -1,25 +1,47 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const rewire = require('rewire');
+const sinonStubPromise = require('sinon-stub-promise');
+sinonStubPromise(sinon);
 
-xdescribe('newsController', function () {
-    // test pending a work around due to module pattern used in newsController the require statement usually needs to be invoked, can't do with rewire...?
+describe('newsController', () => {
+    let mockFetchUrl;
+    let mockCache = {};
+    let newsController;
 
-    const newsController = rewire('../controllers/newsController');
-    var fetchModule = newsController.__get__('fetchUrl');
-    var fetchUrlSpy = sinon.spy(fetchModule);
-    newsController.__set__('fetchUrl', fetchUrlSpy);
+    beforeEach(() => {
+        mockFetchUrl = sinon.stub().returnsPromise();
+        let options = { fetchUrl: mockFetchUrl, cache: mockCache };
+        newsController = require('../controllers/newsController')(options);
+    });
 
-    describe('get', function () {
-        it('should trigger a request to the 3rd party news api', function () {
-            let mockReq = {};
-            let mockRes = {
-                json: sinon.spy(),
-                send: sinon.spy(),
-            }
+    describe('#get', () => {
+        describe('when there is nothing cached', () => {
+            beforeEach(() => {
+                // stub the cache to return nothing and force an api request to be made
+                mockCache.get = sinon.stub().callsArgWith(1, null, null);
+                // stub cache to fire callback after storing data
+                mockCache.set = sinon.stub().callsArg(4);
+            });
 
-            newsController.get(mockReq, mockRes);
-            expect(fetchUrlSpy.called).to.equal(true);
+            it('should trigger a request to the 3rd party news api', () => {
+                let mockReq = {};
+                let mockRes = {};
+                newsController.get(mockReq, mockRes);
+
+                expect(mockFetchUrl.called).to.equal(true);
+            });
+
+            it('should send back the resulting JSON from the 3rd party api', () => {
+                let mock3rdPartResponse = {};
+                let mockReq = {};
+                let mockRes = { json: sinon.spy() }
+
+                // stub fetchUrl to resolve with fake JSON
+                mockFetchUrl.resolves(mock3rdPartResponse);
+                newsController.get(mockReq, mockRes);
+
+                expect(mockRes.json.calledWith(mock3rdPartResponse)).to.equal(true);
+            });
         });
     });
 });

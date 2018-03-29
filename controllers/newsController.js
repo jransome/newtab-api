@@ -1,15 +1,15 @@
-const fetchUrl = require('../modules/fetchUrl');
-const cache = require('../cache');
-
-const newsController = () => {
+const newsController = (options) => {
+    const cacheTimeout = options.cacheTimeout || 120;
+    const fetchUrl = options.fetchUrl //|| require('../modules/fetchUrl');
+    const cache = options.cache //|| require('../cache');
     const key = require('../keys').newsApi;
+
     let sources = "?sources=" +
         "bbc-news," +
         "reuters," +
         "the-guardian-uk," +
         "techradar";
     let url = `https://newsapi.org/v2/top-headlines${sources}&apiKey=${key}`;
-    let cacheTimeout = 120;
 
     let get = (req, res) => {
         cache.get('news', (err, cachedNews) => {
