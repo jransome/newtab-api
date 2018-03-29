@@ -1,6 +1,9 @@
-const expect = require('chai').expect;
+const chai = require('chai');
 const sinon = require('sinon');
+const sinonChai = require('sinon-chai');
 const sinonStubPromise = require('sinon-stub-promise');
+const expect = chai.expect;
+chai.use(sinonChai);
 sinonStubPromise(sinon);
 
 describe('newsController', () => {
@@ -28,7 +31,7 @@ describe('newsController', () => {
                 let mockRes = {};
                 newsController.get(mockReq, mockRes);
 
-                expect(mockFetchUrl.called).to.equal(true);
+                expect(mockFetchUrl).called;
             });
 
             it('should send back the resulting JSON from the 3rd party api', () => {
@@ -40,7 +43,19 @@ describe('newsController', () => {
                 mockFetchUrl.resolves(mock3rdPartResponse);
                 newsController.get(mockReq, mockRes);
 
-                expect(mockRes.json.calledWith(mock3rdPartResponse)).to.equal(true);
+                expect(mockRes.json).calledWith(mock3rdPartResponse);
+            });
+
+            it('if the 3rd party request rejects with an error, it should send back that error', () => {
+                let mock3rdPartError = 'Error';
+                let mockReq = {};
+                let mockRes = { send: sinon.spy() }
+
+                // stub fetchUrl to reject with fake error message
+                mockFetchUrl.rejects(mock3rdPartError);
+                newsController.get(mockReq, mockRes);
+
+                expect(mockRes.send).calledWith(mock3rdPartError);
             });
         });
     });

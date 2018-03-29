@@ -1,7 +1,7 @@
 const newsController = (options = {}) => {
-    const cacheTimeout = options.cacheTimeout || 120;
     const fetchUrl = options.fetchUrl || require('../modules/fetchUrl');
     const cache = options.cache || require('../cache');
+    const cacheTimeout = options.cacheTimeout || 120;
     const key = require('../keys').newsApi;
 
     let sources = "?sources=" +
@@ -21,7 +21,8 @@ const newsController = (options = {}) => {
                         res.json(response);
                     });
                 }, (errorMessage) => {
-                    res.status(500).send(errorMessage);
+                    res.send(errorMessage);
+                    res.status(500);
                 });
             }
         });
