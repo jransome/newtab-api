@@ -2,14 +2,13 @@ const newsController = (options = {}) => {
     const fetchUrl = options.fetchUrl || require('../modules/fetchUrl');
     const cache = options.cache || require('../cache');
     const cacheTimeout = options.cacheTimeout || 120;
-    const key = require('../keys').newsApi;
 
     let sources = "?sources=" +
         "bbc-news," +
         "reuters," +
         "the-guardian-uk," +
         "techradar";
-    let url = `https://newsapi.org/v2/top-headlines${sources}&apiKey=${key}`;
+    let url = `https://newsapi.org/v2/top-headlines${sources}&apiKey=${process.env.NEWSAPIKEY}`;
 
     let get = (req, res) => {
         cache.get('news', (err, cachedNews) => {

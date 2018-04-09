@@ -1,3 +1,4 @@
+require('dotenv').config(); // load variables in the .env into process.env
 const express = require('express');
 const bodyParser = require('body-parser');
 
