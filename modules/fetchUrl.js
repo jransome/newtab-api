@@ -10,7 +10,7 @@ const fetchUrl = (url) => {
             json: true
         };
 
-        request(options, (error, response, body) => {
+        fetchUrl.request(options, (error, response, body) => {
             if (error) {
                 reject(`Unable to connect to ${url}: ${error}`);
             }
@@ -24,4 +24,5 @@ const fetchUrl = (url) => {
     });
 };
 
+fetchUrl.request = request;
 module.exports = fetchUrl;

@@ -15,7 +15,8 @@ const newsController = (options = {}) => {
         cache.get('news', (err, cachedNews) => {
             if (cachedNews !== null) {
                 res.json(JSON.parse(cachedNews));
-            } else {
+            } 
+            else {
                 fetchUrl(url).then((response) => {
                     cache.set('news', JSON.stringify(response), 'EX', cacheTimeout, () => {
                         res.json(response);
