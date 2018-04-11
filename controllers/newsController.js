@@ -10,25 +10,33 @@ const newsController = (options = {}) => {
         "techradar";
     let url = `https://newsapi.org/v2/top-headlines${sources}&apiKey=${process.env.NEWSAPIKEY}`;
 
+    const fetchNews = (res) => fetchUrl(url).then((response) => {
+        res.json(response);
+        return response;
+    }, (errorMessage) => {
+        res.send(errorMessage);
+        res.status(500);
+    });
+
     let get = (req, res) => {
-        cache.get('news', (err, cachedNews) => {
-            if (cachedNews !== null) {
-                res.json(JSON.parse(cachedNews));
-            } 
-            else {
-                fetchUrl(url).then((response) => {
-                    cache.set('news', JSON.stringify(response), 'EX', cacheTimeout, () => {
-                        res.json(response);
+        if (cache.ready) {
+            cache.get('news', (err, cachedNews) => {
+                if (cachedNews !== null) {
+                    res.json(JSON.parse(cachedNews));
+                }
+                else {
+                    fetchNews(res).then((response) => {
+                        cache.set('news', JSON.stringify(response), 'EX', cacheTimeout);
                     });
-                }, (errorMessage) => {
-                    res.send(errorMessage);
-                    res.status(500);
-                });
-            }
-        });
+                }
+            });
+        }
+        else {
+            fetchNews(res);
+        }
     };
 
-    return { get: get }
+    return { get };
 };
 
 module.exports = newsController;
