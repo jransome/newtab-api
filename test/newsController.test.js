@@ -80,5 +80,31 @@ describe('newsController', () => {
                 });
             });
         });
+
+        describe('when cache is not working', () => {
+            beforeEach(() => {
+                mockCache.ready = false
+            });
+
+            it('should trigger a request to the 3rd party news api', () => {
+                let mockReq = {};
+                let mockRes = {};
+                newsController.get(mockReq, mockRes);
+
+                expect(mockFetchUrl).called;
+            });
+
+            it('should send back the resulting JSON from the 3rd party api', () => {
+                let mock3rdPartResponse = { news: 'news' };
+                let mockReq = {};
+                let mockRes = { json: sinon.spy() };
+
+                // stub fetchUrl to resolve with fake JSON
+                mockFetchUrl.resolves(mock3rdPartResponse);
+                newsController.get(mockReq, mockRes);
+
+                expect(mockRes.json).calledWith(mock3rdPartResponse);
+            });            
+        });
     });
 });
